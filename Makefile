@@ -1,4 +1,4 @@
-NAME = jiuzhang/twitter
+NAME = zichenqi/twitter
 # jiuzhang/twitter 就是镜像名，可以改成你自己的，格式： {随意，一般用公司名或者个人名}/{项目名}
 
 
