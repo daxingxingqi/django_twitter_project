@@ -13,6 +13,14 @@ class LoginSerializer(serializers.Serializer):
     username = serializers.CharField()
     password = serializers.CharField()
 
+    def validate(self, data):
+        # 如果用户不存在
+        if not User.objects.filter(username=data['username'].lower()).exists():
+            raise exceptions.ValidationError({
+                "username": "User does not exist"
+            })
+        return data
+
 
 class SignupSerializer(serializers.ModelSerializer):
     # ModelSerializer可以把用户实际创建出来
@@ -30,18 +38,18 @@ class SignupSerializer(serializers.ModelSerializer):
         # username和email希望大小写不敏感，所以输入的时候传入小写
         if User.objects.filter(username=data['username'].lower()).exists():
             raise exceptions.ValidationError({
-                'message': 'This email address has been occupied.'
+                'username': 'This username address has been occupied.'
             })
         if User.objects.filter(email=data['email'].lower()).exists():
             raise exceptions.ValidationError({
-                'message': 'This email address has been occupied.'
+                'email': 'This email address has been occupied.'
             })
         return data
 
     def create(self, validated_data):
         username = validated_data['username'].lower()  # 输入的时候传入小写
         email = validated_data['email'].lower()
-        password = validated_data['password'] # 大小写敏感
+        password = validated_data['password']  # 大小写敏感
 
         # django定义好的
         """

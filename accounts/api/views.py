@@ -61,12 +61,6 @@ class AccountViewSet(viewsets.ViewSet):
             }, status=400)
         username = serializer.validated_data['username'] # validated_data：验证后对字符进行类型转换
         password = serializer.validated_data['password']
-        # 如果用户不存在
-        if not User.objects.filter(username=username).exists():
-            return Response({
-                "success": False,
-                "message": "User does not exist"
-            }, status=400)
 
         # 验证用户密码和用户名
         user = django_authenticate(username=username, password=password)
