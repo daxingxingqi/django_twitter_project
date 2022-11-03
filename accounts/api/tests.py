@@ -1,4 +1,4 @@
-from django.test import TestCase
+from testing.testcases import TestCase
 from rest_framework.test import APIClient  # 更方便提交api request
 from django.contrib.auth.models import User
 
@@ -14,16 +14,13 @@ class AccountApiTests(TestCase):
     def setUp(self):
         # 这个函数会在每个 test function 执行的时候被执行
         self.client = APIClient()  # client可以理解为就是一个浏览器
-        self.user = self.create_User(
+        self.user = self.create_user(
             username='admin',
             email='admin@jiuzhang.com',
             password='correct password',
         )
 
-    def create_User(self, username, email, password):  # 没有以test_开头，所以不是单元测试
-        # 不能写成 User.objects.create()
-        # 因为 password 需要被加密, username 和 email 需要进行一些 normalize 处理
-        return User.objects.create_user(username, email, password)
+
 
     def test_login(self):
         # 每个测试函数必须以 test_ 开头，才会被自动调用进行测试

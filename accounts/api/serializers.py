@@ -8,6 +8,12 @@ class UserSerializer(serializers.ModelSerializer):
         fields = ('username', 'email')
 
 
+class UserSerializerForTweet(serializers.ModelSerializer):
+    class Meta:
+        model = User
+        fields = ('id', 'username') # 可以解析出得表单
+
+
 class LoginSerializer(serializers.Serializer):
     # 检查username和password是否存在
     username = serializers.CharField()
