@@ -13,7 +13,7 @@ class TweetSerializer(serializers.ModelSerializer):
 
 
 class TweetCreateSerializer(serializers.ModelSerializer):
-    #
+
     content = serializers.CharField(min_length=6, max_length=140)
     # 使用了ModelSerializer，那么要指定用了那个model，指定那些fields可以写进去
     class Meta:
