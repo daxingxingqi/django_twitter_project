@@ -14,6 +14,8 @@ class UserSerializerForTweet(serializers.ModelSerializer):
         model = User
         fields = ('id', 'username')
 
+class UserSerializerForComment(UserSerializerForTweet):
+    pass
 
 class LoginSerializer(serializers.Serializer):
     # 检查username和password是否存在
