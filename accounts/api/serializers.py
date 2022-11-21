@@ -12,13 +12,15 @@ class UserSerializer(serializers.ModelSerializer):
 class UserSerializerForTweet(serializers.ModelSerializer):
     class Meta:
         model = User
-        fields = ('id', 'username') # 可以解析出得表单
+        fields = ('id', 'username')
 
 
 class LoginSerializer(serializers.Serializer):
     # 检查username和password是否存在
+    # 不展示，所以没有metadata
     username = serializers.CharField()
     password = serializers.CharField()
+
     def validate(self, data):
         # 如果用户不存在
         if not User.objects.filter(username=data['username'].lower()).exists():
@@ -39,6 +41,7 @@ class SignupSerializer(serializers.ModelSerializer):
     class Meta:
         model = User
         fields = ('username', 'email', 'password')
+
     # 传入数据就调用
     def validate(self, data):
         # username和email希望大小写不敏感，所以输入的时候传入小写
@@ -52,6 +55,7 @@ class SignupSerializer(serializers.ModelSerializer):
             })
         return data
     # 只有serializer save才调用
+
     def create(self, validated_data):
         username = validated_data['username'].lower()  # 输入的时候传入小写
         email = validated_data['email'].lower()

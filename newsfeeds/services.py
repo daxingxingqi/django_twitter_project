@@ -19,5 +19,6 @@ class NewsFeedService(object):
             NewsFeed(user=follower, tweet=tweet)
             for follower in FriendshipService.get_followers(tweet.user)
         ]
+        # 把当前登陆用户也加入
         newsfeeds.append(NewsFeed(user=tweet.user, tweet=tweet))
         NewsFeed.objects.bulk_create(newsfeeds)

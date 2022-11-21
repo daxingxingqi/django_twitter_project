@@ -24,7 +24,10 @@ class UserViewSet(viewsets.ModelViewSet):
 
 
 class AccountViewSet(viewsets.ViewSet):
+    # 定义页面中填写信息的地方，下面三个方法都一样
     serializer_class = SignupSerializer
+   # serializer_class = LoginSerializer
+
 
     @action(methods=['GET'], detail=False)
     # 查询登陆状态
