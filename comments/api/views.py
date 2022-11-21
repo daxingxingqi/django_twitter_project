@@ -17,7 +17,8 @@ class CommentViewSet(viewsets.GenericViewSet):
     不实现 retrieve（查询单个 comment）(GET /api/comments/1/) 的方法，因为没这个需求
     """
     serializer_class = CommentSerializerForCreate
-    queryset = Comment.objects.all() #self.get_object.(filter(id=1)) - /api/comments/1/
+    queryset = Comment.objects.all()  # self.get_object.(filter(id=1)) - /api/comments/1/
+    filterset_fields = ('tweet_id',)  # 来自于django-filter-backend
 
     # list(GET), create（POST）, update(PUT /api/comments/1/), destroy 的方法 都可以使用get_permissions查看权限
     def get_permissions(self):
@@ -29,6 +30,25 @@ class CommentViewSet(viewsets.GenericViewSet):
             # 先检测登陆，在检测是否是user
             return [IsAuthenticated(), IsObjectOwner()]
         return [AllowAny()]
+
+    # GET /api/comments/?tweet_id=1
+    def list(self, request, *args, **kwargs):
+        if 'tweet_id' not in request.query_params:
+            return Response(
+                {
+                    'message': 'missing tweet_id in request',
+                    'success': False,
+                },
+                status=status.HTTP_400_BAD_REQUEST,
+            )
+
+        queryset = self.get_queryset()  # 取到 -》 queryset = Comment.objects.all()
+        comments = self.filter_queryset(queryset).order_by('created_at') # 来自于django-filter-backend， 得到filter完的queryset
+        serializer = CommentSerializer(comments, many=True)
+        return Response(
+            {'comments': serializer.data},
+            status=status.HTTP_200_OK,
+        )
 
     def create(self, request, *args, **kwargs):
         data = {
