@@ -23,7 +23,7 @@ class TweetViewSet(viewsets.GenericViewSet):
     def retrieve(self, request, *args, **kwargs):
         # <HOMEWORK 1> 通过某个 query 参数 with_all_comments 来决定是否需要带上所有 comments
         # <HOMEWORK 2> 通过某个 query 参数 with_preview_comments 来决定是否需要带上前三条 comments
-        tweet = self.get_object()
+        tweet = self.get_object() # queryset = Tweet.objects.all()一定要加
         return Response(TweetSerializerWithComments(tweet).data)
     # request 用户请求
     # 查询用户tweets
