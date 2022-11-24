@@ -1,7 +1,7 @@
 from rest_framework import viewsets
 from rest_framework.permissions import IsAuthenticated, AllowAny
 from rest_framework.response import Response
-from tweets.api.serializers import TweetSerializer, TweetCreateSerializer, TweetSerializerWithComments
+from tweets.api.serializers import TweetSerializer, TweetSerializerForCreate, TweetSerializerForDetail
 from tweets.models import Tweet
 from newsfeeds.services import NewsFeedService
 from utils.decorators import required_params
@@ -12,7 +12,7 @@ class TweetViewSet(viewsets.GenericViewSet):
        API endpoint that allows users to create, list tweets
        """
     queryset = Tweet.objects.all()
-    serializer_class = TweetCreateSerializer # 创建时的表单
+    serializer_class = TweetSerializerForCreate
     # 权限制定
     def get_permissions(self):
         # self.action就是指代下面的list和create，带request的方法
@@ -23,8 +23,11 @@ class TweetViewSet(viewsets.GenericViewSet):
     def retrieve(self, request, *args, **kwargs):
         # <HOMEWORK 1> 通过某个 query 参数 with_all_comments 来决定是否需要带上所有 comments
         # <HOMEWORK 2> 通过某个 query 参数 with_preview_comments 来决定是否需要带上前三条 comments
-        tweet = self.get_object() # queryset = Tweet.objects.all()一定要加
-        return Response(TweetSerializerWithComments(tweet).data)
+        serializer = TweetSerializerForDetail(
+            self.get_object(),
+            context = {'request': request},
+                                        )
+        return Response(serializer.data)
     # request 用户请求
     # 查询用户tweets
 
@@ -47,7 +50,11 @@ class TweetViewSet(viewsets.GenericViewSet):
             user_id=request.query_params['user_id']
         ).order_by('-created_at')
         # many=True 返回json
-        serializer = TweetSerializer(tweets, many=True)
+        serializer = TweetSerializer(
+            tweets,
+            context={'request': request},
+            many=True,
+        )
         # 一般来说 json 格式的 response 默认都要用 hash 的格式，最外层是dict{'tweets': serializer.data}
         # 而不能用 list 的格式（约定俗成）
         return Response({'tweets': serializer.data})
@@ -80,7 +87,7 @@ class TweetViewSet(viewsets.GenericViewSet):
         之后丢给 Response(TweetSerializer(tweet).data, status=201)显示1其它丰富信息
         """
         # 相当于deserialize
-        serializer = TweetCreateSerializer(
+        serializer = TweetSerializerForCreate(
             data=request.data,
             context={'request': request},
         )
@@ -94,4 +101,5 @@ class TweetViewSet(viewsets.GenericViewSet):
         tweet = serializer.save()
         NewsFeedService.fanout_to_followers(tweet)
         # 相当于serialize
-        return Response(TweetSerializer(tweet).data, status=201)
+        serializer = TweetSerializer(tweet, context={'request': request})
+        return Response(serializer.data, status=201)

@@ -7,6 +7,7 @@ from rest_framework.exceptions import ValidationError
 from tweets.models import Tweet
 
 
+
 class LikeSerializer(serializers.ModelSerializer):
     user = UserSerializer()
 
